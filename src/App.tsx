@@ -30,7 +30,6 @@ function App() {
           if (import.meta.env.NODE_ENV === "prod") {
             console.clear();
           }
-          console.log("tomei");
           if (
             error?.response?.status === 401 &&
             error?.response?.data?.detail !== "Incorrect username or password"
@@ -81,9 +80,9 @@ function App() {
     <>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <ToastContainer {...toastOptions} style={{ zIndex: "99999" }} />
           <AppRoutes onChangeState={onChangeState} state={state} />
         </QueryClientProvider>
+        <ToastContainer {...toastOptions} style={{ zIndex: "99999" }} />
       </BrowserRouter>
     </>
   );
