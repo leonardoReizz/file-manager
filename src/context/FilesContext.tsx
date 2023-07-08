@@ -21,18 +21,16 @@ export function FilesContextProvider({
 }: FilesContextProviderProps) {
   const [files, setFiles] = useState<IFile[]>([]);
 
-  const { data, isLoading } = useQuery(
-    ["files"],
-    async () => {
-      const response = await apiFile.list();
-      if (response.status === 200) {
-        return response.data.message;
-      }
-    },
-    {
-      retry: 1,
+  async function fetchFolders() {
+    const response = await apiFile.list();
+    if (response.status === 200) {
+      return response.data.message;
     }
-  );
+  }
+
+  const { data, isLoading } = useQuery("manageFolders", fetchFolders, {
+    retry: 1,
+  });
 
   useEffect(() => {
     if (data) {
