@@ -8,12 +8,18 @@ import { useMutation, useQueryClient } from "react-query";
 import { IDefaultApiResponse } from "@services/types";
 import { AxiosError } from "axios";
 
+interface FavoriteFile {
+  folderId: string;
+  fileId: string;
+}
+
 export function useHome() {
   const [isOpenDeleteFolderDialog, setIsOpenDeleteFolderDialog] =
     useState<boolean>(false);
+
   const [selectedFolder, setSelectedFolder] = useState<IFile | undefined>();
   const filesContext = useFilesContext();
-  const queryData = useQueryClient();
+  const queryClient = useQueryClient();
   const handleDeleteFolder = useCallback((folder: IFile) => {
     setSelectedFolder(folder);
     setIsOpenDeleteFolderDialog(true);
@@ -28,7 +34,7 @@ export function useHome() {
       return apiFile.pinFolder({ folderId });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryData.setQueryData<IFile[]>(["files"], (currentData) => {
+      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
         if (currentData) {
           const findIndex = currentData.findIndex(
             (folder) => folder.folderId === response.data.message.folderId
@@ -56,7 +62,7 @@ export function useHome() {
       return apiFile.unpinFolder({ folderId });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryData.setQueryData<IFile[]>(["files"], (currentData) => {
+      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
         if (currentData) {
           const findIndex = currentData.findIndex(
             (folder) => folder.folderId === response.data.message.folderId
@@ -82,20 +88,72 @@ export function useHome() {
   });
 
   const mutationFavoriteFile = useMutation({
-    mutationFn: (fileId: string) => {
-      return apiFile.favoriteFile({ fileId });
+    mutationFn: ({ fileId, folderId }: FavoriteFile) => {
+      return apiFile.favoriteFile({ fileId, folderId });
     },
-    onSuccess: (response: IDefaultApiResponse) => {},
+    onSuccess: (response: IDefaultApiResponse) => {
+      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
+        if (currentData) {
+          const findIndexFolder = currentData.findIndex(
+            (folder) => folder.folderId === response.data.message.folderId
+          );
+
+          if (findIndexFolder >= 0) {
+            const findIndexFile = currentData[findIndexFolder].files.findIndex(
+              (file) => file.fileId === response.data.message.fileId
+            );
+
+            if (findIndexFile >= 0) {
+              currentData[findIndexFolder].files[findIndexFile].favorited =
+                true;
+
+              return currentData;
+            }
+
+            return currentData;
+          }
+        }
+
+        return [];
+      });
+      toast.success("Favorited file");
+    },
     onError: (_: AxiosError) => {
       toast.error("Unexpected error");
     },
   });
 
   const mutationUnfavoriteFile = useMutation({
-    mutationFn: (fileId: string) => {
-      return apiFile.favoriteFile({ fileId });
+    mutationFn: ({ fileId, folderId }: FavoriteFile) => {
+      return apiFile.unfavoriteFile({ fileId, folderId });
     },
-    onSuccess: (response: IDefaultApiResponse) => {},
+    onSuccess: (response: IDefaultApiResponse) => {
+      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
+        if (currentData) {
+          const findIndexFolder = currentData.findIndex(
+            (folder) => folder.folderId === response.data.message.folderId
+          );
+
+          if (findIndexFolder >= 0) {
+            const findIndexFile = currentData[findIndexFolder].files.findIndex(
+              (file) => file.fileId === response.data.message.fileId
+            );
+
+            if (findIndexFile >= 0) {
+              currentData[findIndexFolder].files[findIndexFile].favorited =
+                false;
+
+              return currentData;
+            }
+
+            return currentData;
+          }
+        }
+
+        return [];
+      });
+      toast.success("Favorited file");
+    },
     onError: (_: AxiosError) => {
       toast.error("Unexpected error");
     },

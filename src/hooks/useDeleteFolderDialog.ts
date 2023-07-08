@@ -16,7 +16,7 @@ export function useDeleteFolderDialog({ handler }: UseDeleteFolderDialogProps) {
       return apiFile.deleteFolder({ folderId });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFile[]>(["files"], (currentData) => {
+      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
         if (currentData) {
           handler();
           return currentData.filter(
