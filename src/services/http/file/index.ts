@@ -1,5 +1,5 @@
 import { ApiUrl } from "@services/url";
-import { apiDelete, get, post } from "@services/methods";
+import { apiDelete, get, post, put } from "@services/methods";
 import { IDefaultApiResponse } from "@services/types";
 import * as t from "./types";
 import api from "@services/api";
@@ -38,23 +38,29 @@ async function upload(data: t.IUploadFileData) {
 }
 
 async function pinFolder(data: t.IPinFolder) {
-  return post({ url: `${ApiUrl}/file/folder/pin/${data.folderId}` });
+  return post({ url: `${ApiUrl}/folder/pin/${data.folderId}` });
 }
 
 async function unpinFolder(data: t.IPinFolder) {
-  return post({ url: `${ApiUrl}/file/folder/unpin/${data.folderId}` });
+  return post({ url: `${ApiUrl}/folder/unpin/${data.folderId}` });
 }
 
 async function favoriteFile(
   data: t.IFavoriteFile
 ): Promise<IDefaultApiResponse> {
-  return post({ url: `${ApiUrl}/file/folder`, data });
+  return put({
+    url: `${ApiUrl}/file/favorite/${data.folderId}/${data.fileId}`,
+    data,
+  });
 }
 
 async function unfavoriteFile(
   data: t.IUnfavoriteFile
 ): Promise<IDefaultApiResponse> {
-  return post({ url: `${ApiUrl}/file/folder`, data });
+  return put({
+    url: `${ApiUrl}/file/unfavorite/${data.folderId}/${data.fileId}`,
+    data,
+  });
 }
 
 export default {
