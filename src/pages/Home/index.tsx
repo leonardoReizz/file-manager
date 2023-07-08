@@ -1,9 +1,19 @@
-import { ListBulletIcon, Squares2X2Icon } from "@heroicons/react/20/solid";
+import {
+  EllipsisVerticalIcon,
+  ListBulletIcon,
+  Squares2X2Icon,
+  StarIcon,
+  TrashIcon,
+} from "@heroicons/react/20/solid";
 import {
   Card,
   CardBody,
   Collapse,
   IconButton,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
   Tab,
   Tabs,
   TabsHeader,
@@ -57,7 +67,11 @@ export function Home() {
 
   const TABLE_ROWS = files.flatMap((folder) => {
     return folder.files.map((file) => {
-      return { ...file, path: `/${folder.folderName}` };
+      return {
+        ...file,
+        path: `/${folder.folderName}`,
+        folderId: folder.folderId,
+      };
     });
   });
 
@@ -195,8 +209,17 @@ export function Home() {
                     </thead>
                     <tbody>
                       {TABLE_ROWS.map(
-                        ({ fileName, fileId, path, extension }, index) => {
-                          console.log(extension);
+                        (
+                          {
+                            fileName,
+                            fileId,
+                            path,
+                            extension,
+                            folderId,
+                            favorited,
+                          },
+                          index
+                        ) => {
                           const isLast = index === TABLE_ROWS.length - 1;
                           const classes = isLast
                             ? "p-4"
@@ -275,23 +298,56 @@ export function Home() {
                               </td>
                               <td className={classes}>
                                 <div className="flex items-center gap-4">
-                                  <Typography
-                                    as="a"
-                                    href="#"
-                                    variant="small"
-                                    color="blue"
-                                    className="font-medium"
-                                  >
-                                    Edit
-                                  </Typography>
-                                  <IconButton
-                                    variant="text"
-                                    onClick={() =>
-                                      mutationFavoriteFile.mutate(fileId)
-                                    }
-                                  >
-                                    FAV
-                                  </IconButton>
+                                  <Menu>
+                                    <MenuHandler>
+                                      <IconButton
+                                        variant="text"
+                                        className="rounded-full hover:bg-blue-100 h-8 w-8"
+                                      >
+                                        <EllipsisVerticalIcon className="h-5 w-5" />
+                                      </IconButton>
+                                    </MenuHandler>
+                                    <MenuList className="flex flex-col gap-1">
+                                      {!favorited && (
+                                        <MenuItem
+                                          className="flex items-center gap-2"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            mutationFavoriteFile.mutate({
+                                              folderId,
+                                              fileId,
+                                            });
+                                          }}
+                                        >
+                                          <StarIcon className="h-4 w-4" />
+                                          Favorite
+                                        </MenuItem>
+                                      )}
+
+                                      {favorited && (
+                                        <MenuItem
+                                          className="flex items-center gap-2"
+                                          onClick={(e) => {
+                                            mutationUnfavoriteFile.mutate({
+                                              folderId,
+                                              fileId,
+                                            });
+                                          }}
+                                        >
+                                          <StarIcon className="h-4 w-4" />
+                                          Unfavorite
+                                        </MenuItem>
+                                      )}
+                                      <hr className="mr-1" />
+                                      <MenuItem
+                                        className="flex items-center gap-2 !text-red-500"
+                                        onClick={(e) => {}}
+                                      >
+                                        <TrashIcon className="h-4 w-4" />
+                                        Delete File
+                                      </MenuItem>
+                                    </MenuList>
+                                  </Menu>
                                 </div>
                               </td>
                             </tr>
