@@ -5,6 +5,7 @@ export interface IFile {
   folderId: string;
   files: {
     file: string;
+    favorited: boolean;
     fileId: string;
     fileName: string;
     extension: string;
@@ -30,8 +31,10 @@ export interface IPinFolder {
 
 export interface IFavoriteFile {
   fileId: string;
+  folderId: string;
 }
 
 export interface IUnfavoriteFile {
-  userId: string;
+  fileId: string;
+  folderId: string;
 }
