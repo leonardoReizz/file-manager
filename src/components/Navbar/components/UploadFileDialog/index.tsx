@@ -23,8 +23,6 @@ export function UploadFileDialog({ handler, open }: UploadFileDialogProps) {
       open,
     });
 
-  console.log(folders);
-
   return (
     <Dialog
       open={open}
