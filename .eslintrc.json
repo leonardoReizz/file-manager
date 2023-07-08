@@ -1,0 +1,10 @@
+{
+  "extends": "@rocketseat/eslint-config/react",
+  "rules": {
+    "semi": [2, "always"],
+    "prettier/prettier": ["error", { "semi": true,  "endOfLine": "auto" }],
+    "no-unused-vars": "off",
+    "prefer-const": "off",
+    "no-undef": "off"
+  }
+}
