@@ -6,10 +6,12 @@ import * as Yup from "yup";
 import apiFolder from "@services/http/file/index";
 import { IFile } from "@services/http/file/types";
 import { useEffect } from "react";
+
 interface UseCreateFolderDialogProps {
   handler: () => void;
   open: boolean;
 }
+
 export function useCreateFolderDialog({
   handler,
   open,
@@ -28,7 +30,7 @@ export function useCreateFolderDialog({
       return apiFolder.createFolder({ name: values.name });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFile[]>(["files"], (currentData) => {
+      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
         if (currentData) {
           formikProps.resetForm();
 
@@ -36,6 +38,7 @@ export function useCreateFolderDialog({
             ...currentData,
             {
               folder: response.data.message.folder,
+              pinned: false,
               folderId: response.data.message.folderId,
               folderName: response.data.message.folderName,
               files: [],
