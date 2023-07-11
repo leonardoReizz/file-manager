@@ -8,16 +8,13 @@ import { FilesContextProvider } from "../context/FilesContext";
 import { Folder } from "@pages/Folder";
 import { Loading } from "@components/Loading";
 import { ProtectedRoutes } from "./ProtectedRoutes";
+import { ProfileSettings } from "@pages/ProfileSettings";
+import { SecuritySettings } from "@pages/SecuritySettings";
+import { LayoutWithSettingsSidebar } from "./LayoutWithSettingsSidebar";
 
-interface AppRoutesProps {
-  state: "loading" | "index";
-  onChangeState: (newState: "loading" | "index") => void;
-}
-
-export function AppRoutes({ state, onChangeState }: AppRoutesProps) {
+export function AppRoutes() {
   return (
     <>
-      <Loading state={state} />
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
@@ -25,13 +22,17 @@ export function AppRoutes({ state, onChangeState }: AppRoutesProps) {
           <Route
             element={
               <UserContextProvider>
-                <FilesContextProvider onChangeState={onChangeState}>
+                <FilesContextProvider>
                   <LayoutWithSidebar />
                 </FilesContextProvider>
               </UserContextProvider>
             }
           >
             <Route path="/home" element={<Home />} />
+            <Route path="settings" element={<LayoutWithSettingsSidebar />}>
+              <Route path="profile" element={<ProfileSettings />} />
+              <Route path="security" element={<SecuritySettings />} />
+            </Route>
             <Route path="/folder/:folderId">
               <Route path="" element={<Folder />} />
             </Route>

@@ -10,15 +10,12 @@ interface FilesContextType {
 
 interface FilesContextProviderProps {
   children: ReactNode;
-  onChangeState: (newState: "index" | "loading") => void;
+  // onChangeState: (newState: "index" | "loading") => void;
 }
 
 export const FilesContext = createContext({} as FilesContextType);
 
-export function FilesContextProvider({
-  children,
-  onChangeState,
-}: FilesContextProviderProps) {
+export function FilesContextProvider({ children }: FilesContextProviderProps) {
   const [files, setFiles] = useState<IFile[]>([]);
 
   async function fetchFolders() {
@@ -30,6 +27,7 @@ export function FilesContextProvider({
 
   const { data, isLoading } = useQuery("manageFolders", fetchFolders, {
     retry: 1,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -41,7 +39,7 @@ export function FilesContextProvider({
   useEffect(() => {
     if (!isLoading) {
       setTimeout(() => {
-        onChangeState("index");
+        // onChangeState("index");
       }, 1000);
     }
   }, [isLoading]);

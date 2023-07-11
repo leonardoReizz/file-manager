@@ -6,23 +6,8 @@ import Cookies from "js-cookie";
 import { ToastContainer } from "react-toastify";
 import { toastOptions } from "@utils/toastOptions";
 import "react-toastify/dist/ReactToastify.css";
-import { useCallback, useEffect, useState } from "react";
 
 function App() {
-  const [state, setState] = useState<"index" | "loading">(
-    Cookies.get("leviFileRefresh") ? "loading" : "index"
-  );
-
-  const onChangeState = useCallback((newState: "index" | "loading") => {
-    setState(newState);
-  }, []);
-
-  useEffect(() => {
-    if (!Cookies.get("leviFileRefresh")) {
-      setState("index");
-    }
-  }, []);
-
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -48,12 +33,12 @@ function App() {
                   ); // 50 minutes to milissegundos
                   Cookies.set(
                     "leviFileRefresh",
-                    `${result.data.token_type} ${result.data.refresh_token}`,
+                    `${result.data.token_type} ${result.data.refreshToken}`,
                     { expires: expirationDateRefreshToken }
                   );
                   Cookies.set(
                     "leviFileToken",
-                    `${result.data.token_type} ${result.data.access_token}`,
+                    `${result.data.token_type} ${result.data.accessToken}`,
                     { expires: expirationDateToken }
                   );
                 } else {
@@ -65,8 +50,7 @@ function App() {
               .catch((error) => {
                 Cookies.remove("leviFileRefresh");
                 console.log(error);
-                // window.location.href = "/";
-                setState("index");
+                window.location.href = "/";
                 return error;
               });
             queryClient.invalidateQueries();
@@ -80,7 +64,7 @@ function App() {
     <>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <AppRoutes onChangeState={onChangeState} state={state} />
+          <AppRoutes />
         </QueryClientProvider>
         <ToastContainer {...toastOptions} style={{ zIndex: "99999" }} />
       </BrowserRouter>
