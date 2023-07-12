@@ -6,7 +6,6 @@ interface AxiosData {
   url: string;
   data?: any;
   params?: any;
-  authorization?: string;
 }
 
 export async function get({ url, data, params }: AxiosData) {
