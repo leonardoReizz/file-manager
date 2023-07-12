@@ -19,21 +19,20 @@ export function UserContextProvider({ children }: UserContextProviderProps) {
     fullName: "",
     createdAt: new Date(),
     updatedAt: new Date(),
-    id: "",
+    _id: "",
   });
 
-  const { data, isLoading } = useQuery(
-    ["user"],
-    async () => {
-      const response = await apiUser.getUser();
-      if (response?.status === 200) {
-        return response.data.message;
-      }
-    },
-    {
-      retry: 1,
+  async function getUser() {
+    const response = await apiUser.getUser();
+    if (response?.status === 200) {
+      return response.data.message;
     }
-  );
+  }
+
+  const { data, isLoading } = useQuery("user", getUser, {
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
     if (data) {
