@@ -55,12 +55,6 @@ export function Home() {
   } = useHome();
 
   const [listFileType, setListFileType] = useState<"grid" | "list">("list");
-  const [openPinned, setOpenPinned] = useState(true);
-  const [openFolders, setOpenFolders] = useState(true);
-  const [openFiles, setOpenFiles] = useState(true);
-  const toggleOpenPinned = () => setOpenPinned((cur) => !cur);
-  const toggleOpenFolders = () => setOpenFolders((cur) => !cur);
-  const toggleOpenFiles = () => setOpenFiles((cur) => !cur);
   const toggleListFileType = (value: "grid" | "list") => setListFileType(value);
 
   const TABLE_HEAD = ["Name", "Path", "CreatedAt", ""];
@@ -88,70 +82,60 @@ export function Home() {
       )}
       <div className="w-full">
         <section>
-          <Typography variant="h4" onClick={toggleOpenPinned}>
-            Pinned Folders
-          </Typography>
+          <Typography variant="h4">Pinned Folders</Typography>
 
-          <Collapse open={openPinned}>
-            <Card className="my-4  w-full shadow-none">
-              <CardBody className="grid grid-cols-4 gap-4 w-full p-0">
-                {files
-                  .filter((folder) => folder.pinned)
-                  .map((item) => {
-                    if (item.folder !== "Root") {
-                      return (
-                        <FolderCard
-                          handleUnpinFolder={() =>
-                            mutationUnpinFolder.mutate(item.folderId)
-                          }
-                          key={item.folderId}
-                          title={item.folderName}
-                          onClick={() => navigate(`/folder/${item.folderId}`)}
-                          handleDelete={() => handleDeleteFolder(item)}
-                        />
-                      );
-                    }
-                    return <Fragment key="root"></Fragment>;
-                  })}
-              </CardBody>
-            </Card>
-          </Collapse>
+          <Card className="my-4  w-full shadow-none">
+            <CardBody className="grid grid-cols-4 gap-4 w-full p-0">
+              {files
+                .filter((folder) => folder.pinned)
+                .map((item) => {
+                  if (item.folder !== "Root") {
+                    return (
+                      <FolderCard
+                        handleUnpinFolder={() =>
+                          mutationUnpinFolder.mutate(item.folderId)
+                        }
+                        key={item.folderId}
+                        title={item.folderName}
+                        onClick={() => navigate(`/folder/${item.folderId}`)}
+                        handleDelete={() => handleDeleteFolder(item)}
+                      />
+                    );
+                  }
+                  return <Fragment key="root"></Fragment>;
+                })}
+            </CardBody>
+          </Card>
         </section>
         <section>
-          <Typography variant="h4" onClick={toggleOpenFolders}>
-            Folders
-          </Typography>
+          <Typography variant="h4">Folders</Typography>
 
-          <Collapse open={openFolders}>
-            <Card className="my-4  w-full shadow-none">
-              <CardBody className="grid grid-cols-4 gap-4 w-full p-0">
-                {files
-                  .filter((folder) => !folder.pinned)
-                  .map((item) => {
-                    if (item.folder !== "Root") {
-                      return (
-                        <FolderCard
-                          handlePinFolder={() =>
-                            mutationPinFolder.mutate(item.folderId)
-                          }
-                          key={item.folderId}
-                          title={item.folderName}
-                          onClick={() => navigate(`/folder/${item.folderId}`)}
-                          handleDelete={() => handleDeleteFolder(item)}
-                        />
-                      );
-                    }
-                    return <Fragment key="root"></Fragment>;
-                  })}
-              </CardBody>
-            </Card>
-          </Collapse>
+          <Card className="my-4  w-full shadow-none">
+            <CardBody className="flex flex-wrap gap-4 p-0">
+              {files
+                .filter((folder) => !folder.pinned)
+                .map((item) => {
+                  if (item.folder !== "Root") {
+                    return (
+                      <FolderCard
+                        handlePinFolder={() =>
+                          mutationPinFolder.mutate(item.folderId)
+                        }
+                        key={item.folderId}
+                        title={item.folderName}
+                        onClick={() => navigate(`/folder/${item.folderId}`)}
+                        handleDelete={() => handleDeleteFolder(item)}
+                      />
+                    );
+                  }
+                  return <Fragment key="root"></Fragment>;
+                })}
+            </CardBody>
+          </Card>
         </section>
         <section>
           <div className="w-full flex justify-between">
-            <Typography variant="h4" onClick={toggleOpenFiles}>
-              Files
-            </Typography>
+            <Typography variant="h4">Files</Typography>
             <Tabs value={listFileType}>
               <TabsHeader
                 indicatorProps={{
@@ -184,182 +168,181 @@ export function Home() {
               </TabsHeader>
             </Tabs>
           </div>
-          <Collapse open={openFiles}>
-            <Card className="my-4  w-full shadow-none">
-              <CardBody className=" p-0">
-                <Card className="h-full w-full">
-                  <table className="w-full min-w-max table-auto text-left p-0">
-                    <thead>
-                      <tr>
-                        {TABLE_HEAD.map((head) => (
-                          <th
-                            key={head}
-                            className="  border-blue-gray-100 bg-transparent p-4"
+
+          <Card className="my-4  w-full shadow-none">
+            <CardBody className=" p-0">
+              <Card className="h-full w-full">
+                <table className="w-full min-w-max table-auto text-left p-0">
+                  <thead>
+                    <tr>
+                      {TABLE_HEAD.map((head) => (
+                        <th
+                          key={head}
+                          className="  border-blue-gray-100 bg-transparent p-4"
+                        >
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal leading-none opacity-70"
                           >
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal leading-none opacity-70"
-                            >
-                              {head}
-                            </Typography>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {TABLE_ROWS.map(
-                        (
-                          {
-                            fileName,
-                            fileId,
-                            path,
-                            extension,
-                            folderId,
-                            favorited,
-                          },
-                          index
-                        ) => {
-                          const isLast = index === TABLE_ROWS.length - 1;
-                          const classes = isLast
-                            ? "p-4"
-                            : "p-4 border-b  rounded-full border-blue-gray-50";
+                            {head}
+                          </Typography>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {TABLE_ROWS.map(
+                      (
+                        {
+                          fileName,
+                          fileId,
+                          path,
+                          extension,
+                          folderId,
+                          favorited,
+                        },
+                        index
+                      ) => {
+                        const isLast = index === TABLE_ROWS.length - 1;
+                        const classes = isLast
+                          ? "p-4"
+                          : "p-4 border-b  rounded-full border-blue-gray-50";
 
-                          return (
-                            <tr key={fileId} className="border">
-                              <td className={classes}>
-                                <div className="flex items-center gap-2">
-                                  <img
-                                    className="h-6 w-6"
-                                    src={
-                                      extension.startsWith(".pdf")
-                                        ? pdfIcon
-                                        : extension.startsWith(".ai")
-                                        ? aiIcon
-                                        : extension.startsWith(".doc")
-                                        ? docIcon
-                                        : extension.startsWith(".jpg")
-                                        ? jpgIcon
-                                        : extension.startsWith(".ppt")
-                                        ? pptIcon
-                                        : extension.startsWith(".psd")
-                                        ? psdIcon
-                                        : extension.startsWith(".svg")
-                                        ? svgIcon
-                                        : extension.startsWith(".xls")
-                                        ? xlsIcon
-                                        : extension.startsWith(".css")
-                                        ? cssIcon
-                                        : extension.startsWith(".html")
-                                        ? htmlIcon
-                                        : extension.startsWith(".ts")
-                                        ? tsIcon
-                                        : extension.startsWith(".txt")
-                                        ? txtIcon
-                                        : extension.startsWith(".gif")
-                                        ? gifIcon
-                                        : extension.startsWith(".mp3")
-                                        ? mp3Icon
-                                        : extension.startsWith(".zip")
-                                        ? zipIcon
-                                        : extension.startsWith(".js")
-                                        ? jsIcon
-                                        : zipIcon
-                                    }
-                                    alt=""
-                                  />
+                        return (
+                          <tr key={fileId} className="border">
+                            <td className={classes}>
+                              <div className="flex items-center gap-2">
+                                <img
+                                  className="h-6 w-6"
+                                  src={
+                                    extension.startsWith(".pdf")
+                                      ? pdfIcon
+                                      : extension.startsWith(".ai")
+                                      ? aiIcon
+                                      : extension.startsWith(".doc")
+                                      ? docIcon
+                                      : extension.startsWith(".jpg")
+                                      ? jpgIcon
+                                      : extension.startsWith(".ppt")
+                                      ? pptIcon
+                                      : extension.startsWith(".psd")
+                                      ? psdIcon
+                                      : extension.startsWith(".svg")
+                                      ? svgIcon
+                                      : extension.startsWith(".xls")
+                                      ? xlsIcon
+                                      : extension.startsWith(".css")
+                                      ? cssIcon
+                                      : extension.startsWith(".html")
+                                      ? htmlIcon
+                                      : extension.startsWith(".ts")
+                                      ? tsIcon
+                                      : extension.startsWith(".txt")
+                                      ? txtIcon
+                                      : extension.startsWith(".gif")
+                                      ? gifIcon
+                                      : extension.startsWith(".mp3")
+                                      ? mp3Icon
+                                      : extension.startsWith(".zip")
+                                      ? zipIcon
+                                      : extension.startsWith(".js")
+                                      ? jsIcon
+                                      : zipIcon
+                                  }
+                                  alt=""
+                                />
 
-                                  <Typography
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal"
-                                  >
-                                    {fileName}
-                                  </Typography>
-                                </div>
-                              </td>
-                              <td className={classes}>
                                 <Typography
                                   variant="small"
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {path === "/Root" ? "/" : path}
+                                  {fileName}
                                 </Typography>
-                              </td>
-                              <td className={classes}>
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                  className="font-normal"
-                                >
-                                  "
-                                </Typography>
-                              </td>
-                              <td className={classes}>
-                                <div className="flex items-center gap-4">
-                                  <Menu>
-                                    <MenuHandler>
-                                      <IconButton
-                                        variant="text"
-                                        className="rounded-full hover:bg-blue-100 h-8 w-8"
-                                      >
-                                        <EllipsisVerticalIcon className="h-5 w-5" />
-                                      </IconButton>
-                                    </MenuHandler>
-                                    <MenuList className="flex flex-col gap-1">
-                                      {!favorited && (
-                                        <MenuItem
-                                          className="flex items-center gap-2"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            mutationFavoriteFile.mutate({
-                                              folderId,
-                                              fileId,
-                                            });
-                                          }}
-                                        >
-                                          <StarIcon className="h-4 w-4" />
-                                          Favorite
-                                        </MenuItem>
-                                      )}
-
-                                      {favorited && (
-                                        <MenuItem
-                                          className="flex items-center gap-2"
-                                          onClick={(e) => {
-                                            mutationUnfavoriteFile.mutate({
-                                              folderId,
-                                              fileId,
-                                            });
-                                          }}
-                                        >
-                                          <StarIcon className="h-4 w-4" />
-                                          Unfavorite
-                                        </MenuItem>
-                                      )}
-                                      <hr className="mr-1" />
+                              </div>
+                            </td>
+                            <td className={classes}>
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                              >
+                                {path === "/Root" ? "/" : path}
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                              >
+                                "
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <div className="flex items-center gap-4">
+                                <Menu>
+                                  <MenuHandler>
+                                    <IconButton
+                                      variant="text"
+                                      className="rounded-full hover:bg-blue-100 h-8 w-8"
+                                    >
+                                      <EllipsisVerticalIcon className="h-5 w-5" />
+                                    </IconButton>
+                                  </MenuHandler>
+                                  <MenuList className="flex flex-col gap-1">
+                                    {!favorited && (
                                       <MenuItem
-                                        className="flex items-center gap-2 !text-red-500"
-                                        onClick={(e) => {}}
+                                        className="flex items-center gap-2"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          mutationFavoriteFile.mutate({
+                                            folderId,
+                                            fileId,
+                                          });
+                                        }}
                                       >
-                                        <TrashIcon className="h-4 w-4" />
-                                        Delete File
+                                        <StarIcon className="h-4 w-4" />
+                                        Favorite
                                       </MenuItem>
-                                    </MenuList>
-                                  </Menu>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        }
-                      )}
-                    </tbody>
-                  </table>
-                </Card>
-              </CardBody>
-            </Card>
-          </Collapse>
+                                    )}
+
+                                    {favorited && (
+                                      <MenuItem
+                                        className="flex items-center gap-2"
+                                        onClick={(e) => {
+                                          mutationUnfavoriteFile.mutate({
+                                            folderId,
+                                            fileId,
+                                          });
+                                        }}
+                                      >
+                                        <StarIcon className="h-4 w-4" />
+                                        Unfavorite
+                                      </MenuItem>
+                                    )}
+                                    <hr className="mr-1" />
+                                    <MenuItem
+                                      className="flex items-center gap-2 !text-red-500"
+                                      onClick={(e) => {}}
+                                    >
+                                      <TrashIcon className="h-4 w-4" />
+                                      Delete File
+                                    </MenuItem>
+                                  </MenuList>
+                                </Menu>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    )}
+                  </tbody>
+                </table>
+              </Card>
+            </CardBody>
+          </Card>
         </section>
       </div>
     </>
