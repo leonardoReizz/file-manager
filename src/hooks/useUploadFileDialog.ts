@@ -32,6 +32,7 @@ export function useUploadFileDialog({
       return apiFile.upload({ file: formData, folderId: selectedFolder });
     },
     onSuccess: (response: IDefaultApiResponse) => {
+      handler();
       toast.success("Saved file");
     },
     onError: () => {
