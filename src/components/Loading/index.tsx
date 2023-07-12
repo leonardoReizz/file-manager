@@ -8,7 +8,7 @@ interface LoadingProps {
 export function Loading({ state }: LoadingProps) {
   return (
     <div
-      className={`invisible opacity-0 pointer-events-auto  transition-all delay-300 absolute h-screen w-screen bg-white z-[1000] flex flex-col  gap-4 items-center justify-center ${
+      className={`invisible opacity-0 pointer-events-auto  transition-all delay-300 absolute h-screen w-screen bg-white z-[9999] flex flex-col  gap-4 items-center justify-center ${
         state === "loading" && "!visible !opacity-100 !pointer-events-none"
       }`}
     >
