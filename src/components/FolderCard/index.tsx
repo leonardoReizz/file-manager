@@ -33,7 +33,7 @@ export function FolderCard({
   return (
     <Card
       onClick={onClick}
-      className="rounded-lg border h-[80px] w-full p-4 flex flex-row items-center justify-between hover:bg-blue-50 cursor-pointer transition"
+      className="rounded-lg border flex-[1_1_300px]  h-[80px] w-full p-4 flex flex-row items-center justify-between hover:bg-blue-50 cursor-pointer transition"
     >
       <div className="flex items-center justify-start gap-4 w-full ">
         <div className="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center">
