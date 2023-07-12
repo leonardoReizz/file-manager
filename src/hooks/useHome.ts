@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "react-query";
 import { IDefaultApiResponse } from "@services/types";
 import { AxiosError } from "axios";
+import { useLocation } from "react-router-dom";
 
 interface FavoriteFile {
   folderId: string;
@@ -20,6 +21,8 @@ export function useHome() {
   const [selectedFolder, setSelectedFolder] = useState<IFile | undefined>();
   const filesContext = useFilesContext();
   const queryClient = useQueryClient();
+  const { search } = useLocation();
+
   const handleDeleteFolder = useCallback((folder: IFile) => {
     setSelectedFolder(folder);
     setIsOpenDeleteFolderDialog(true);
@@ -159,8 +162,21 @@ export function useHome() {
     },
   });
 
+  const searchParams = new URLSearchParams(search);
+  const decodedSearch: string =
+    decodeURIComponent(searchParams.get("search") || "") || "";
+
+  const files = filesContext.files.filter(
+    (folder) =>
+      folder.folderName.toLowerCase().includes(decodedSearch.toLowerCase()) ||
+      folder.files.some((file) =>
+        file.extension.toLowerCase().includes(decodedSearch.toLowerCase())
+      )
+  );
+
   return {
     ...filesContext,
+    files,
     handleDeleteFolder,
     onOpenChangeDeleteFolderDialog,
     isOpenDeleteFolderDialog,
@@ -169,5 +185,6 @@ export function useHome() {
     mutationUnpinFolder,
     mutationUnfavoriteFile,
     mutationFavoriteFile,
+    searchValue: decodedSearch,
   };
 }

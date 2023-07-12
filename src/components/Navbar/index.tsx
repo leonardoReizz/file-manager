@@ -21,6 +21,7 @@ export function Navbar() {
     isOpenUploadDialog,
     onOpenChangeCreateFolderDialog,
     onOpenChangeUploadDialog,
+    onChangeSearchValue,
   } = useNavbar();
 
   return (
@@ -47,6 +48,7 @@ export function Navbar() {
                 containerProps={{
                   className: " w-full ",
                 }}
+                onChange={(e) => onChangeSearchValue(e.target.value)}
               />
               <IconButton
                 variant="text"
