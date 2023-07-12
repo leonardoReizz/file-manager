@@ -12,13 +12,13 @@ async function list(): Promise<IDefaultApiResponse> {
 async function createFolder(
   data: t.ICreateFolderData
 ): Promise<IDefaultApiResponse> {
-  return post({ url: `${ApiUrl}/file/folder`, data });
+  return post({ url: `${ApiUrl}/folder`, data });
 }
 
 async function deleteFolder(
   data: t.IDeleteFolderData
 ): Promise<IDefaultApiResponse> {
-  return apiDelete({ url: `${ApiUrl}/file/folder/${data.folderId}` });
+  return apiDelete({ url: `${ApiUrl}/folder/${data.folderId}` });
 }
 
 async function upload(data: t.IUploadFileData) {
