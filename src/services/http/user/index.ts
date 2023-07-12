@@ -1,4 +1,4 @@
-import { post, get } from "@services/methods";
+import { post, get, put } from "@services/methods";
 import { ApiUrl } from "@services/url";
 import * as t from "./types";
 import { IDefaultApiResponse } from "@services/types";
@@ -9,24 +9,6 @@ async function createUser(
   return post({ url: `${ApiUrl}/user`, data });
 }
 
-// async function passwordRecover(email: string): Promise<IDefaultApiResponse> {
-//   return await get({
-//     url: `${ApiUrl}/user/passwrecover`,
-//     params: {
-//       email,
-//     },
-//   });
-// }
-
-// async function passwordChange(data: t.PasswordChangeData): Promise<any> {
-//   const changePassword = await put({
-//     url: `${ApiUrl.USER}/user/passwrecover`,
-//     data,
-//   });
-
-//   return changePassword;
-// }
-
 async function getUser(): Promise<IDefaultApiResponse> {
   const getUser = await get({
     url: `${ApiUrl}/user`,
@@ -35,7 +17,27 @@ async function getUser(): Promise<IDefaultApiResponse> {
   return getUser;
 }
 
+async function updateUser(
+  data: t.IUpdateUserData
+): Promise<IDefaultApiResponse> {
+  return put({
+    url: `${ApiUrl}/user`,
+    data,
+  });
+}
+
+async function changePassword(
+  data: t.IChangePasswordData
+): Promise<IDefaultApiResponse> {
+  return put({
+    url: `${ApiUrl}/user/changePassword`,
+    data,
+  });
+}
+
 export default {
   createUser,
   getUser,
+  updateUser,
+  changePassword,
 };
