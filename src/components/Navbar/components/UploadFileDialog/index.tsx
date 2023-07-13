@@ -10,6 +10,7 @@ import {
   Option,
   Spinner,
 } from "@material-tailwind/react";
+import styles from "./upload.module.css";
 
 interface UploadFileDialogProps {
   handler: () => void;
@@ -62,10 +63,8 @@ export function UploadFileDialog({ handler, open }: UploadFileDialogProps) {
           <input
             type="file"
             onChange={handleFileChange}
-            placeholder="Select file"
-            className=""
+            className={`${styles.upload} relative  bg-gray-200 flex rounded-tr-md rounded-br-md border-0`}
           />
-
           <div className="flex flex-col gap-2 max-w-[300px] justify-center items-center w-full">
             <Button
               className="mt-6 flex items-center justify-center bg-violet-500 shadow-violet-300 hover:shadow-violet-400 "
