@@ -1,15 +1,17 @@
 export interface IFile {
+  file: string;
+  favorited: boolean;
+  fileId: string;
+  fileName: string;
+  extension: string;
+}
+
+export interface IFolder {
   folder: string;
   folderName: string;
   pinned: boolean;
   folderId: string;
-  files: {
-    file: string;
-    favorited: boolean;
-    fileId: string;
-    fileName: string;
-    extension: string;
-  }[];
+  files: IFile[];
 }
 
 export interface ICreateFolderData {
@@ -35,6 +37,11 @@ export interface IFavoriteFile {
 }
 
 export interface IUnfavoriteFile {
+  fileId: string;
+  folderId: string;
+}
+
+export interface IDeleteFile {
   fileId: string;
   folderId: string;
 }

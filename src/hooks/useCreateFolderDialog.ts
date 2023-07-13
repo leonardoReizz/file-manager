@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import apiFolder from "@services/http/file/index";
-import { IFile } from "@services/http/file/types";
+import { IFolder } from "@services/http/file/types";
 import { useEffect } from "react";
 
 interface UseCreateFolderDialogProps {
@@ -30,7 +30,7 @@ export function useCreateFolderDialog({
       return apiFolder.createFolder({ name: values.name });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
+      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
         if (currentData) {
           formikProps.resetForm();
 
