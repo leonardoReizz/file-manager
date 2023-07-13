@@ -1,10 +1,10 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import apiFile from "@services/http/file/index";
-import { IFile } from "@services/http/file/types";
+import { IFolder } from "@services/http/file/types";
 
 interface FilesContextType {
-  files: IFile[];
+  files: IFolder[];
   isLoading: boolean;
 }
 
@@ -16,7 +16,7 @@ interface FilesContextProviderProps {
 export const FilesContext = createContext({} as FilesContextType);
 
 export function FilesContextProvider({ children }: FilesContextProviderProps) {
-  const [files, setFiles] = useState<IFile[]>([]);
+  const [files, setFiles] = useState<IFolder[]>([]);
 
   async function fetchFolders() {
     const response = await apiFile.list();
