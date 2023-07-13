@@ -9,6 +9,7 @@ import {
   IconButton,
   Input,
   Navbar as MaterialNavbar,
+  Tooltip,
 } from "@material-tailwind/react";
 import { useRef } from "react";
 import { CreateFolderDialog } from "./components/CreateFolderDialog";
@@ -50,12 +51,20 @@ export function Navbar() {
                 }}
                 onChange={(e) => onChangeSearchValue(e.target.value)}
               />
-              <IconButton
-                variant="text"
-                className="!absolute right-1 top-[2px] rounded text-violet-500 active:bg-violet-100 hover:bg-violet-100 focus:bg-transparent"
+              <Tooltip
+                content="Filters"
+                animate={{
+                  mount: { scale: 1, y: 0 },
+                  unmount: { scale: 0, y: -25 },
+                }}
               >
-                <AdjustmentsHorizontalIcon className="w-5 h-5" />
-              </IconButton>
+                <IconButton
+                  variant="text"
+                  className="!absolute right-1 top-[2px] rounded text-violet-500 active:bg-violet-100 hover:bg-violet-100 focus:bg-transparent"
+                >
+                  <AdjustmentsHorizontalIcon className="w-5 h-5" />
+                </IconButton>
+              </Tooltip>
             </div>
             <div className="ml-auto flex gap-4">
               <Button
