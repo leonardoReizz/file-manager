@@ -63,8 +63,16 @@ async function unfavoriteFile(
   });
 }
 
+async function deleteFile(data: t.IDeleteFile): Promise<IDefaultApiResponse> {
+  return apiDelete({
+    url: `${ApiUrl}/file/${data.folderId}/${data.fileId}`,
+    data,
+  });
+}
+
 export default {
   list,
+  deleteFile,
   createFolder,
   deleteFolder,
   upload,

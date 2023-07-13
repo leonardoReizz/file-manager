@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useFilesContext } from "./context/useFilesContext";
-import { IFile } from "@services/http/file/types";
+import { IFile, IFolder } from "@services/http/file/types";
 
 import apiFile from "@services/http/file/index";
 import { toast } from "react-toastify";
@@ -17,19 +17,33 @@ interface FavoriteFile {
 export function useHome() {
   const [isOpenDeleteFolderDialog, setIsOpenDeleteFolderDialog] =
     useState<boolean>(false);
+  const [isOpenDeleteFileDialog, setIsOpenDeleteFileDialog] =
+    useState<boolean>(false);
 
-  const [selectedFolder, setSelectedFolder] = useState<IFile | undefined>();
+  const [selectedFolder, setSelectedFolder] = useState<IFolder | undefined>();
+  const [selectedFile, setSelectedFile] = useState<IFile | undefined>();
+
   const filesContext = useFilesContext();
   const queryClient = useQueryClient();
   const { search } = useLocation();
 
-  const handleDeleteFolder = useCallback((folder: IFile) => {
+  const handleDeleteFolder = useCallback((folder: IFolder) => {
     setSelectedFolder(folder);
     setIsOpenDeleteFolderDialog(true);
   }, []);
 
+  const handleDeleteFile = useCallback((file: IFile, folder: IFolder) => {
+    setSelectedFile(file);
+    setSelectedFolder(folder);
+    setIsOpenDeleteFileDialog(true);
+  }, []);
+
   const onOpenChangeDeleteFolderDialog = useCallback(() => {
     setIsOpenDeleteFolderDialog((state) => !state);
+  }, []);
+
+  const onOpenChangeDeleteFileDialog = useCallback(() => {
+    setIsOpenDeleteFileDialog((state) => !state);
   }, []);
 
   const mutationPinFolder = useMutation({
@@ -37,7 +51,7 @@ export function useHome() {
       return apiFile.pinFolder({ folderId });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
+      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
         if (currentData) {
           const findIndex = currentData.findIndex(
             (folder) => folder.folderId === response.data.message.folderId
@@ -65,7 +79,7 @@ export function useHome() {
       return apiFile.unpinFolder({ folderId });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
+      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
         if (currentData) {
           const findIndex = currentData.findIndex(
             (folder) => folder.folderId === response.data.message.folderId
@@ -95,7 +109,7 @@ export function useHome() {
       return apiFile.favoriteFile({ fileId, folderId });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
+      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
         if (currentData) {
           const findIndexFolder = currentData.findIndex(
             (folder) => folder.folderId === response.data.message.folderId
@@ -131,7 +145,7 @@ export function useHome() {
       return apiFile.unfavoriteFile({ fileId, folderId });
     },
     onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFile[]>("manageFolders", (currentData) => {
+      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
         if (currentData) {
           const findIndexFolder = currentData.findIndex(
             (folder) => folder.folderId === response.data.message.folderId
@@ -186,5 +200,9 @@ export function useHome() {
     mutationUnfavoriteFile,
     mutationFavoriteFile,
     searchValue: decodedSearch,
+    handleDeleteFile,
+    isOpenDeleteFileDialog,
+    selectedFile,
+    onOpenChangeDeleteFileDialog,
   };
 }

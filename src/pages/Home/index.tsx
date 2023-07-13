@@ -40,6 +40,7 @@ import txtIcon from "@assets/file-icons/TXT.svg";
 import jsIcon from "@assets/file-icons/JS.svg";
 import gifIcon from "@assets/file-icons/GIF.svg";
 import mp3Icon from "@assets/file-icons/MP3.svg";
+import { DeleteFileDialog } from "./components/DeleteFileDialog";
 
 export function Home() {
   const {
@@ -52,6 +53,10 @@ export function Home() {
     mutationUnpinFolder,
     mutationFavoriteFile,
     mutationUnfavoriteFile,
+    handleDeleteFile,
+    isOpenDeleteFileDialog,
+    selectedFile,
+    onOpenChangeDeleteFileDialog,
   } = useHome();
 
   const [listFileType, setListFileType] = useState<"grid" | "list">("list");
@@ -65,6 +70,7 @@ export function Home() {
         ...file,
         path: `/${folder.folderName}`,
         folderId: folder.folderId,
+        folder,
       };
     });
   });
@@ -77,6 +83,14 @@ export function Home() {
         <DeleteFolderDialog
           handler={onOpenChangeDeleteFolderDialog}
           open={isOpenDeleteFolderDialog}
+          folder={selectedFolder}
+        />
+      )}
+      {selectedFile && selectedFolder && (
+        <DeleteFileDialog
+          handler={onOpenChangeDeleteFileDialog}
+          open={isOpenDeleteFileDialog}
+          file={selectedFile}
           folder={selectedFolder}
         />
       )}
@@ -198,9 +212,11 @@ export function Home() {
                           fileName,
                           fileId,
                           path,
+                          file,
                           extension,
                           folderId,
                           favorited,
+                          folder,
                         },
                         index
                       ) => {
@@ -325,7 +341,18 @@ export function Home() {
                                     <hr className="mr-1" />
                                     <MenuItem
                                       className="flex items-center gap-2 !text-red-500"
-                                      onClick={(e) => {}}
+                                      onClick={() =>
+                                        handleDeleteFile(
+                                          {
+                                            extension,
+                                            favorited,
+                                            file,
+                                            fileId,
+                                            fileName,
+                                          },
+                                          folder
+                                        )
+                                      }
                                     >
                                       <TrashIcon className="h-4 w-4" />
                                       Delete File

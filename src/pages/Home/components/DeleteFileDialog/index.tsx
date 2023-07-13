@@ -1,4 +1,5 @@
 import { TrashIcon } from "@heroicons/react/20/solid";
+import { useDeleteFileDialog } from "@hooks/useDeleteFileDialog";
 import { useDeleteFolderDialog } from "@hooks/useDeleteFolderDialog";
 import {
   Button,
@@ -8,20 +9,22 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import { IFolder } from "@services/http/file/types";
+import { IFile, IFolder } from "@services/http/file/types";
 
-interface DeleteFolderDialogProps {
+interface DeleteFileDialogProps {
   handler: () => void;
   open: boolean;
+  file: IFile;
   folder: IFolder;
 }
 
-export function DeleteFolderDialog({
+export function DeleteFileDialog({
   handler,
   open,
+  file,
   folder,
-}: DeleteFolderDialogProps) {
-  const { mutationDeleteFolder } = useDeleteFolderDialog({ handler });
+}: DeleteFileDialogProps) {
+  const { mutationDeleteFile } = useDeleteFileDialog({ handler });
   return (
     <Dialog
       open={open}
@@ -29,20 +32,19 @@ export function DeleteFolderDialog({
       className="!max-w-[200px] !min-w-[500px] "
       size="md"
     >
-      <DialogHeader className="flex  items-start relative gap-4">
+      <DialogHeader className="flex items-start relative gap-4">
         <hr className="mr-1 border-red-500 border-t-[6px] absolute w-full top-[0px] rounded-t-md left-0 " />
         <div className="absolute w-full flex justify-center items-center left-0">
           <div className="bg-red-500 rounded-full h-20 min-w-[5rem] p-4 mt-2  text-white absolute -top-16 ">
             <TrashIcon />
           </div>
         </div>
-        <div className="pt-8 flex flex-col items-center gap-4 w-full">
-          <Typography variant="h4">Delete Folder</Typography>
+        <div className="pt-8 flex flex-col justify-center items-center gap-4 w-full">
+          <Typography variant="h4">Delete File</Typography>
           <Typography small="small">
             Are you sure you want to delete:{" "}
             <strong className="font-bold uppercase text-red-500">
-              {folder?.folderName}, all files in this folder will also be
-              removed
+              {file?.fileName}
             </strong>
           </Typography>
         </div>
@@ -54,11 +56,16 @@ export function DeleteFolderDialog({
             fullWidth
             color="red"
             size="md"
-            disabled={mutationDeleteFolder.isLoading}
+            disabled={mutationDeleteFile.isLoading}
             type="submit"
-            onClick={() => mutationDeleteFolder.mutate(folder?.folderId)}
+            onClick={() =>
+              mutationDeleteFile.mutate({
+                fileId: file.fileId,
+                folderId: folder.folderId,
+              })
+            }
           >
-            {mutationDeleteFolder.isLoading ? (
+            {mutationDeleteFile.isLoading ? (
               <Spinner className="h-5 w-5" color="cyan" />
             ) : (
               "Delete"
