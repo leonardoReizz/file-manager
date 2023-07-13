@@ -229,6 +229,9 @@ export function Home() {
                           <tr key={fileId} className="border">
                             <td className={classes}>
                               <div className="flex items-center gap-2">
+                                {favorited && (
+                                  <StarIcon className="h-4 w-4 text-amber-400" />
+                                )}
                                 <img
                                   className="h-6 w-6"
                                   src={
@@ -272,7 +275,7 @@ export function Home() {
                                 <Typography
                                   variant="small"
                                   color="blue-gray"
-                                  className="font-normal"
+                                  className="font-normal flex items-center gap-2 "
                                 >
                                   {fileName}
                                 </Typography>
