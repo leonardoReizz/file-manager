@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import { useFormik } from "formik";
 import { useUserContext } from "./context/useUserContext";
-import { IDefaultApiResponse } from "@services/types";
+import { DefaultApiResponse } from "@services/types";
 
 export function useProfileSettings() {
   const queryClient = useQueryClient();
@@ -22,7 +22,7 @@ export function useProfileSettings() {
     mutationFn: (values: typeof initialValues) => {
       return apiUser.updateUser({ id: user._id, ...values });
     },
-    onSuccess: (response: IDefaultApiResponse) => {
+    onSuccess: (response: DefaultApiResponse) => {
       queryClient.setQueryData("user", (currentData) => {
         console.log(currentData, response);
         if (currentData) {
