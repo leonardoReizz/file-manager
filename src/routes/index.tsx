@@ -11,6 +11,7 @@ import { ProtectedRoutes } from "./ProtectedRoutes";
 import { ProfileSettings } from "@pages/ProfileSettings";
 import { SecuritySettings } from "@pages/SecuritySettings";
 import { LayoutWithSettingsSidebar } from "./LayoutWithSettingsSidebar";
+import { Favorite } from "@pages/Favorite";
 
 export function AppRoutes() {
   return (
@@ -29,6 +30,7 @@ export function AppRoutes() {
             }
           >
             <Route path="/home" element={<Home />} />
+            <Route path="favorite" element={<Favorite />} />
             <Route path="settings" element={<LayoutWithSettingsSidebar />}>
               <Route path="profile" element={<ProfileSettings />} />
               <Route path="security" element={<SecuritySettings />} />
