@@ -1,8 +1,8 @@
-import { IDefaultApiResponse } from "@services/types";
+import { DefaultApiResponse } from "@services/types";
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import apiFile from "@services/http/file/index";
-import { IFolder } from "@services/http/file/types";
+import { Folder } from "@services/http/file/types";
 import { AxiosError } from "axios";
 
 interface UseDeleteFolderDialogProps {
@@ -15,8 +15,8 @@ export function useDeleteFolderDialog({ handler }: UseDeleteFolderDialogProps) {
     mutationFn: (folderId: string) => {
       return apiFile.deleteFolder({ folderId });
     },
-    onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
+    onSuccess: (response: DefaultApiResponse) => {
+      queryClient.setQueryData<Folder[]>("manageFolders", (currentData) => {
         if (currentData) {
           handler();
           return currentData.filter(
