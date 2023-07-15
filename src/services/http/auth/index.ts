@@ -1,11 +1,11 @@
 import * as t from "./types";
 import { ApiUrl } from "@services/url";
 import { post } from "@services/methods";
-import { IDefaultApiResponse } from "@services/types";
+import { DefaultApiResponse } from "@services/types";
 import Cookies from "js-cookie";
 import api from "@services/api";
 
-async function signIn(data: t.AuthLoginData): Promise<IDefaultApiResponse> {
+async function signIn(data: t.AuthLoginData): Promise<DefaultApiResponse> {
   return post({ url: `${ApiUrl}/authenticate/`, data });
 }
 

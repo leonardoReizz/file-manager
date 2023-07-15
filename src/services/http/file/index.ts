@@ -1,27 +1,27 @@
 import { ApiUrl } from "@services/url";
 import { apiDelete, get, post, put } from "@services/methods";
-import { IDefaultApiResponse } from "@services/types";
+import { DefaultApiResponse } from "@services/types";
 import * as t from "./types";
 import api from "@services/api";
 import Cookies from "js-cookie";
 
-async function list(): Promise<IDefaultApiResponse> {
+async function list(): Promise<DefaultApiResponse> {
   return get({ url: `${ApiUrl}/file/` });
 }
 
 async function createFolder(
-  data: t.ICreateFolderData
-): Promise<IDefaultApiResponse> {
+  data: t.CreateFolderData
+): Promise<DefaultApiResponse> {
   return post({ url: `${ApiUrl}/folder`, data });
 }
 
 async function deleteFolder(
-  data: t.IDeleteFolderData
-): Promise<IDefaultApiResponse> {
+  data: t.DeleteFolderData
+): Promise<DefaultApiResponse> {
   return apiDelete({ url: `${ApiUrl}/folder/${data.folderId}` });
 }
 
-async function upload(data: t.IUploadFileData) {
+async function upload(data: t.UploadFileData) {
   return await api
     .post(`${ApiUrl}/file/upload/${data.folderId}`, data.file, {
       headers: {
@@ -37,17 +37,17 @@ async function upload(data: t.IUploadFileData) {
     });
 }
 
-async function pinFolder(data: t.IPinFolder) {
+async function pinFolder(data: t.PinFolder) {
   return post({ url: `${ApiUrl}/folder/pin/${data.folderId}` });
 }
 
-async function unpinFolder(data: t.IPinFolder) {
+async function unpinFolder(data: t.PinFolder) {
   return post({ url: `${ApiUrl}/folder/unpin/${data.folderId}` });
 }
 
 async function favoriteFile(
-  data: t.IFavoriteFile
-): Promise<IDefaultApiResponse> {
+  data: t.FavoriteFile
+): Promise<DefaultApiResponse> {
   return put({
     url: `${ApiUrl}/file/favorite/${data.folderId}/${data.fileId}`,
     data,
@@ -55,15 +55,15 @@ async function favoriteFile(
 }
 
 async function unfavoriteFile(
-  data: t.IUnfavoriteFile
-): Promise<IDefaultApiResponse> {
+  data: t.UnfavoriteFile
+): Promise<DefaultApiResponse> {
   return put({
     url: `${ApiUrl}/file/unfavorite/${data.folderId}/${data.fileId}`,
     data,
   });
 }
 
-async function deleteFile(data: t.IDeleteFile): Promise<IDefaultApiResponse> {
+async function deleteFile(data: t.DeleteFile): Promise<DefaultApiResponse> {
   return apiDelete({
     url: `${ApiUrl}/file/${data.folderId}/${data.fileId}`,
     data,

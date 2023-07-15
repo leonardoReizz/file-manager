@@ -1,6 +1,6 @@
 import api from "@services/api";
 import Cookies from "js-cookie";
-import { IDefaultApiResponse } from "./types";
+import { DefaultApiResponse } from "./types";
 
 interface AxiosData {
   url: string;
@@ -28,7 +28,7 @@ export async function get({ url, data, params }: AxiosData) {
 export async function post({
   url,
   data,
-}: Omit<AxiosData, "params">): Promise<IDefaultApiResponse> {
+}: Omit<AxiosData, "params">): Promise<DefaultApiResponse> {
   return await api
     .post(url, data, {
       headers: {
