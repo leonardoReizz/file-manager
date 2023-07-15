@@ -8,12 +8,12 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import { IFolder } from "@services/http/file/types";
+import { Folder } from "@services/http/file/types";
 
 interface DeleteFolderDialogProps {
   handler: () => void;
   open: boolean;
-  folder: IFolder;
+  folder: Folder;
 }
 
 export function DeleteFolderDialog({
