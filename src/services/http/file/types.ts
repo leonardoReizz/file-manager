@@ -1,47 +1,49 @@
-export interface IFile {
+import { ExtensionType } from "@components/FileIcon";
+
+export interface File {
   file: string;
   favorited: boolean;
   fileId: string;
   fileName: string;
-  extension: string;
+  extension: ExtensionType;
 }
 
-export interface IFolder {
+export interface Folder {
   folder: string;
   folderName: string;
   pinned: boolean;
   folderId: string;
-  files: IFile[];
+  files: File[];
 }
 
-export interface ICreateFolderData {
+export interface CreateFolderData {
   name: string;
 }
 
-export interface IDeleteFolderData {
+export interface DeleteFolderData {
   folderId: string;
 }
 
-export interface IUploadFileData {
+export interface UploadFileData {
   file: FormData;
   folderId: string;
 }
 
-export interface IPinFolder {
+export interface PinFolder {
   folderId: string;
 }
 
-export interface IFavoriteFile {
+export interface FavoriteFile {
   fileId: string;
   folderId: string;
 }
 
-export interface IUnfavoriteFile {
+export interface UnfavoriteFile {
   fileId: string;
   folderId: string;
 }
 
-export interface IDeleteFile {
+export interface DeleteFile {
   fileId: string;
   folderId: string;
 }

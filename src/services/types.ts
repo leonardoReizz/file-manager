@@ -1,4 +1,4 @@
-export interface IDefaultApiResponse {
+export interface DefaultApiResponse {
   data: {
     message: any;
     [key: string]: any;
@@ -6,7 +6,7 @@ export interface IDefaultApiResponse {
   status: number;
 }
 
-export interface IApiDelete {
+export interface ApiDelete {
   data?: any;
   url: string;
   params?: any;

@@ -4,7 +4,7 @@ export interface CreateUserData {
   password: string;
 }
 
-export interface IUser {
+export interface User {
   _id: string;
   fullName: string;
   email: string;
@@ -12,13 +12,13 @@ export interface IUser {
   updatedAt: Date;
 }
 
-export interface IUpdateUserData {
+export interface UpdateUserData {
   email?: string;
   fullName?: string;
   id: string;
 }
 
-export interface IChangePasswordData {
+export interface ChangePasswordData {
   currentPassword: string;
   newPassword: string;
 }
