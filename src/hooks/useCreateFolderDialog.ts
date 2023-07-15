@@ -1,10 +1,10 @@
-import { IDefaultApiResponse } from "@services/types";
+import { DefaultApiResponse } from "@services/types";
 import { useFormik } from "formik";
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import apiFolder from "@services/http/file/index";
-import { IFolder } from "@services/http/file/types";
+import { Folder } from "@services/http/file/types";
 import { useEffect } from "react";
 
 interface UseCreateFolderDialogProps {
@@ -29,8 +29,8 @@ export function useCreateFolderDialog({
     mutationFn: (values: typeof initialValues) => {
       return apiFolder.createFolder({ name: values.name });
     },
-    onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
+    onSuccess: (response: DefaultApiResponse) => {
+      queryClient.setQueryData<Folder[]>("manageFolders", (currentData) => {
         if (currentData) {
           formikProps.resetForm();
 
