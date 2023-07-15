@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import apiAuthenticate from "@services/http/auth/index";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
-import { IDefaultApiResponse } from "@services/types";
+import { DefaultApiResponse } from "@services/types";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 
@@ -21,7 +21,7 @@ export function useSignIn() {
     mutationFn: async (values: typeof initialValues) => {
       return apiAuthenticate.signIn(values);
     },
-    onSuccess: (response: IDefaultApiResponse) => {
+    onSuccess: (response: DefaultApiResponse) => {
       const expirationDateToken = new Date();
       const expirationDateRefreshToken = new Date();
       expirationDateRefreshToken.setTime(
