@@ -9,13 +9,13 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import { IFile, IFolder } from "@services/http/file/types";
+import { File, Folder } from "@services/http/file/types";
 
 interface DeleteFileDialogProps {
   handler: () => void;
   open: boolean;
-  file: IFile;
-  folder: IFolder;
+  file: File;
+  folder: Folder;
 }
 
 export function DeleteFileDialog({

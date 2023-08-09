@@ -1,41 +1,63 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFilesContext } from "./context/useFilesContext";
-import { IFile, IFolder } from "@services/http/file/types";
+import { File, Folder } from "@services/http/file/types";
 
 import apiFile from "@services/http/file/index";
 import { toast } from "react-toastify";
 import { useMutation, useQueryClient } from "react-query";
-import { IDefaultApiResponse } from "@services/types";
-import { AxiosError } from "axios";
-import { useLocation } from "react-router-dom";
-
-interface FavoriteFile {
-  folderId: string;
-  fileId: string;
-}
+import { DefaultApiResponse } from "@services/types";
+import { useLocation, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { useViewFileDialogContext } from "./useViewFileDialogContext";
 
 export function useHome() {
   const [isOpenDeleteFolderDialog, setIsOpenDeleteFolderDialog] =
     useState<boolean>(false);
   const [isOpenDeleteFileDialog, setIsOpenDeleteFileDialog] =
     useState<boolean>(false);
+  const [isOpenMenu, setIsOpenMenu] = useState<boolean[]>([]);
 
-  const [selectedFolder, setSelectedFolder] = useState<IFolder | undefined>();
-  const [selectedFile, setSelectedFile] = useState<IFile | undefined>();
+  const [listFileType, setListFileType] = useState<"grid" | "list">(
+    (Cookies.get("viewFileType") as "grid" | "list") || "list"
+  );
+  const toggleListFileType = useCallback((value: "grid" | "list") => {
+    setListFileType(value);
+    Cookies.set("viewFileType", value);
+  }, []);
 
+  const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>();
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
+
+  const {
+    isOpen: isOpenViewFileDialog,
+    onOpenChange: onOpenChangeViewFileDialog,
+  } = useViewFileDialogContext();
+
+  const navigate = useNavigate();
+  const gridRef = useRef<HTMLDivElement>();
   const filesContext = useFilesContext();
   const queryClient = useQueryClient();
   const { search } = useLocation();
 
-  const handleDeleteFolder = useCallback((folder: IFolder) => {
-    setSelectedFolder(folder);
-    setIsOpenDeleteFolderDialog(true);
+  useEffect(() => {
+    window.addEventListener("click", (e) => {
+      if (e.target !== gridRef.current) {
+        setIsOpenMenu((state) =>
+          state.map(() => {
+            return false;
+          })
+        );
+      }
+    });
+
+    return () => {
+      window.removeEventListener("click", () => {});
+    };
   }, []);
 
-  const handleDeleteFile = useCallback((file: IFile, folder: IFolder) => {
-    setSelectedFile(file);
+  const handleDeleteFolder = useCallback((folder: Folder) => {
     setSelectedFolder(folder);
-    setIsOpenDeleteFileDialog(true);
+    setIsOpenDeleteFolderDialog(true);
   }, []);
 
   const onOpenChangeDeleteFolderDialog = useCallback(() => {
@@ -46,12 +68,29 @@ export function useHome() {
     setIsOpenDeleteFileDialog((state) => !state);
   }, []);
 
+  const onOpenChangeMenu = useCallback(
+    (open: boolean, index: number) => {
+      let menuOpen = isOpenMenu.map(() => false);
+      menuOpen[index] = open;
+      setIsOpenMenu(menuOpen);
+    },
+    [isOpenMenu]
+  );
+
+  const handleOpenViewFileDialog = useCallback(
+    (file: File | undefined, open: boolean) => {
+      onOpenChangeViewFileDialog(open);
+      setSelectedFile(file);
+    },
+    [onOpenChangeViewFileDialog]
+  );
+
   const mutationPinFolder = useMutation({
     mutationFn: (folderId: string) => {
       return apiFile.pinFolder({ folderId });
     },
-    onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
+    onSuccess: (response: DefaultApiResponse) => {
+      queryClient.setQueryData<Folder[]>("manageFolders", (currentData) => {
         if (currentData) {
           const findIndex = currentData.findIndex(
             (folder) => folder.folderId === response.data.message.folderId
@@ -78,8 +117,8 @@ export function useHome() {
     mutationFn: (folderId: string) => {
       return apiFile.unpinFolder({ folderId });
     },
-    onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
+    onSuccess: (response: DefaultApiResponse) => {
+      queryClient.setQueryData<Folder[]>("manageFolders", (currentData) => {
         if (currentData) {
           const findIndex = currentData.findIndex(
             (folder) => folder.folderId === response.data.message.folderId
@@ -104,78 +143,6 @@ export function useHome() {
     },
   });
 
-  const mutationFavoriteFile = useMutation({
-    mutationFn: ({ fileId, folderId }: FavoriteFile) => {
-      return apiFile.favoriteFile({ fileId, folderId });
-    },
-    onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
-        if (currentData) {
-          const findIndexFolder = currentData.findIndex(
-            (folder) => folder.folderId === response.data.message.folderId
-          );
-
-          if (findIndexFolder >= 0) {
-            const findIndexFile = currentData[findIndexFolder].files.findIndex(
-              (file) => file.fileId === response.data.message.fileId
-            );
-
-            if (findIndexFile >= 0) {
-              currentData[findIndexFolder].files[findIndexFile].favorited =
-                true;
-
-              return currentData;
-            }
-
-            return currentData;
-          }
-        }
-
-        return [];
-      });
-      toast.success("Favorited file");
-    },
-    onError: (_: AxiosError) => {
-      toast.error("Unexpected error");
-    },
-  });
-
-  const mutationUnfavoriteFile = useMutation({
-    mutationFn: ({ fileId, folderId }: FavoriteFile) => {
-      return apiFile.unfavoriteFile({ fileId, folderId });
-    },
-    onSuccess: (response: IDefaultApiResponse) => {
-      queryClient.setQueryData<IFolder[]>("manageFolders", (currentData) => {
-        if (currentData) {
-          const findIndexFolder = currentData.findIndex(
-            (folder) => folder.folderId === response.data.message.folderId
-          );
-
-          if (findIndexFolder >= 0) {
-            const findIndexFile = currentData[findIndexFolder].files.findIndex(
-              (file) => file.fileId === response.data.message.fileId
-            );
-
-            if (findIndexFile >= 0) {
-              currentData[findIndexFolder].files[findIndexFile].favorited =
-                false;
-
-              return currentData;
-            }
-
-            return currentData;
-          }
-        }
-
-        return [];
-      });
-      toast.success("Favorited file");
-    },
-    onError: (_: AxiosError) => {
-      toast.error("Unexpected error");
-    },
-  });
-
   const searchParams = new URLSearchParams(search);
   const decodedSearch: string =
     decodeURIComponent(searchParams.get("search") || "") || "";
@@ -188,6 +155,19 @@ export function useHome() {
       )
   );
 
+  const TABLE_HEAD = ["Name", "Path", "CreatedAt", ""];
+
+  const TABLE_ROWS = files.flatMap((folder) => {
+    return folder.files.map((file) => {
+      return {
+        ...file,
+        path: `/${folder.folderName}`,
+        folderId: folder.folderId,
+        folder,
+      };
+    });
+  });
+
   return {
     ...filesContext,
     files,
@@ -197,12 +177,20 @@ export function useHome() {
     selectedFolder,
     mutationPinFolder,
     mutationUnpinFolder,
-    mutationUnfavoriteFile,
-    mutationFavoriteFile,
     searchValue: decodedSearch,
-    handleDeleteFile,
     isOpenDeleteFileDialog,
     selectedFile,
     onOpenChangeDeleteFileDialog,
+    TABLE_HEAD,
+    TABLE_ROWS,
+    listFileType,
+    toggleListFileType,
+    isOpenMenu,
+    onOpenChangeMenu,
+    navigate,
+    isOpenViewFileDialog,
+    onOpenChangeViewFileDialog,
+    gridRef,
+    handleOpenViewFileDialog,
   };
 }

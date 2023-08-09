@@ -77,10 +77,10 @@ export function FolderCard({
                 Pin Folder
               </MenuItem>
             )}
-            <MenuItem className="flex items-center gap-2">
+            {/* <MenuItem className="flex items-center gap-2">
               <ShareIcon className="h-4 w-4" />
               Share
-            </MenuItem>
+            </MenuItem> */}
             <hr className="mr-1" />
             <MenuItem
               className="flex items-center gap-2 !text-red-500"

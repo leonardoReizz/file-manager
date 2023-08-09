@@ -3,44 +3,28 @@ import {
   ListBulletIcon,
   Squares2X2Icon,
   StarIcon,
-  TrashIcon,
 } from "@heroicons/react/20/solid";
+
 import {
+  Button,
   Card,
   CardBody,
-  Collapse,
   IconButton,
-  Menu,
-  MenuHandler,
-  MenuItem,
-  MenuList,
   Tab,
   Tabs,
   TabsHeader,
   Typography,
 } from "@material-tailwind/react";
-import { Fragment, useState } from "react";
+
+import { Fragment } from "react";
 import { FolderCard } from "../../components/FolderCard";
 import { useHome } from "@hooks/useHome";
 import { DeleteFolderDialog } from "./components/DeleteFolderDialog";
-import { useNavigate } from "react-router-dom";
-import pdfIcon from "@assets/file-icons/PDF.svg";
-import aiIcon from "@assets/file-icons/AI.svg";
-import docIcon from "@assets/file-icons/DOC.svg";
-import jpgIcon from "@assets/file-icons/JPG.svg";
-import pptIcon from "@assets/file-icons/PPT.svg";
-import psdIcon from "@assets/file-icons/PSD.svg";
-import svgIcon from "@assets/file-icons/SVG.svg";
-import xlsIcon from "@assets/file-icons/XLS.svg";
-import zipIcon from "@assets/file-icons/ZIP.svg";
-import cssIcon from "@assets/file-icons/CSS.svg";
-import htmlIcon from "@assets/file-icons/HTML.svg";
-import tsIcon from "@assets/file-icons/TS.svg";
-import txtIcon from "@assets/file-icons/TXT.svg";
-import jsIcon from "@assets/file-icons/JS.svg";
-import gifIcon from "@assets/file-icons/GIF.svg";
-import mp3Icon from "@assets/file-icons/MP3.svg";
+
 import { DeleteFileDialog } from "./components/DeleteFileDialog";
+import { FileIcon } from "@components/FileIcon";
+import { FileMenu } from "@components/FileMenu";
+import { ViewFileDialog } from "./components/ViewFileDialog";
 
 export function Home() {
   const {
@@ -51,34 +35,23 @@ export function Home() {
     selectedFolder,
     mutationPinFolder,
     mutationUnpinFolder,
-    mutationFavoriteFile,
-    mutationUnfavoriteFile,
-    handleDeleteFile,
     isOpenDeleteFileDialog,
     selectedFile,
     onOpenChangeDeleteFileDialog,
+    TABLE_ROWS,
+    TABLE_HEAD,
+    navigate,
+    listFileType,
+    toggleListFileType,
+    handleOpenViewFileDialog,
+    isOpenMenu,
+    onOpenChangeMenu,
+    gridRef,
   } = useHome();
-
-  const [listFileType, setListFileType] = useState<"grid" | "list">("list");
-  const toggleListFileType = (value: "grid" | "list") => setListFileType(value);
-
-  const TABLE_HEAD = ["Name", "Path", "CreatedAt", ""];
-
-  const TABLE_ROWS = files.flatMap((folder) => {
-    return folder.files.map((file) => {
-      return {
-        ...file,
-        path: `/${folder.folderName}`,
-        folderId: folder.folderId,
-        folder,
-      };
-    });
-  });
-
-  const navigate = useNavigate();
 
   return (
     <>
+      {selectedFile && <ViewFileDialog file={selectedFile} />}
       {selectedFolder && (
         <DeleteFolderDialog
           handler={onOpenChangeDeleteFolderDialog}
@@ -123,7 +96,6 @@ export function Home() {
         </section>
         <section>
           <Typography variant="h4">Folders</Typography>
-
           <Card className="my-4  w-full shadow-none">
             <CardBody className="flex flex-wrap gap-4 p-0">
               {files
@@ -183,101 +155,99 @@ export function Home() {
             </Tabs>
           </div>
 
-          <Card className="my-4  w-full shadow-none">
-            <CardBody className=" p-0">
-              <Card className="h-full w-full">
-                <table className="w-full min-w-max table-auto text-left p-0">
-                  <thead>
-                    <tr>
-                      {TABLE_HEAD.map((head) => (
-                        <th
-                          key={head}
-                          className="  border-blue-gray-100 bg-transparent p-4"
+          {listFileType === "grid" && (
+            <Card className="my-4  w-full shadow-none">
+              <CardBody className=" p-0" ref={gridRef}>
+                <div className="h-full w-full flex flex-wrap gap-4">
+                  {TABLE_ROWS.map((file, index) => {
+                    return (
+                      <FileMenu
+                        file={file}
+                        folderId={file.folderId}
+                        key={file.fileId}
+                        handler={() => {}}
+                        open={isOpenMenu[index]}
+                      >
+                        <Button
+                          key={file.fileId}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            onOpenChangeMenu(true, index);
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          className="h-40 max-w-[160px] font-normal normal-case shadow-gray-400  hover:shadow-gray-300 border bg-transparent  border-gray-100 flex flex-[1_1_100px] p-4 flex-col items-center gap-2 rounded-xl transition  cursor-pointer "
                         >
+                          <FileIcon
+                            extension={file.extension}
+                            className="!h-16 !w-16"
+                          />
                           <Typography
                             variant="small"
-                            color="blue-gray"
-                            className="font-normal leading-none opacity-70"
+                            className="mt-auto text-black"
                           >
-                            {head}
+                            {file.fileName}
                           </Typography>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {TABLE_ROWS.map(
-                      (
-                        {
-                          fileName,
-                          fileId,
-                          path,
-                          file,
-                          extension,
-                          folderId,
-                          favorited,
-                          folder,
-                        },
-                        index
-                      ) => {
+                        </Button>
+                      </FileMenu>
+                    );
+                  })}
+                </div>
+              </CardBody>
+            </Card>
+          )}
+
+          {listFileType === "list" && (
+            <Card className="my-4  w-full shadow-none">
+              <CardBody className=" p-0">
+                <Card className="h-full w-full">
+                  <table className="w-full min-w-max table-auto text-left p-0">
+                    <thead>
+                      <tr>
+                        {TABLE_HEAD.map((head) => (
+                          <th
+                            key={head}
+                            className="  border-blue-gray-100 bg-transparent p-4"
+                          >
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal leading-none opacity-70"
+                            >
+                              {head}
+                            </Typography>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {TABLE_ROWS.map((file, index) => {
                         const isLast = index === TABLE_ROWS.length - 1;
                         const classes = isLast
-                          ? "p-4"
-                          : "p-4 border-b  rounded-full border-blue-gray-50";
+                          ? "p-4 !rounded-none"
+                          : "p-4 border-b  !rounded-none border-blue-gray-50";
 
                         return (
-                          <tr key={fileId} className="border">
+                          <tr
+                            key={file.fileId}
+                            className="border cursor-pointer transition hover:bg-violet-100 rounded-none"
+                            onClick={() => handleOpenViewFileDialog(file, true)}
+                          >
                             <td className={classes}>
                               <div className="flex items-center gap-2">
-                                {favorited && (
+                                {file.favorited && (
                                   <StarIcon className="h-4 w-4 text-amber-400" />
                                 )}
-                                <img
-                                  className="h-6 w-6"
-                                  src={
-                                    extension.startsWith(".pdf")
-                                      ? pdfIcon
-                                      : extension.startsWith(".ai")
-                                      ? aiIcon
-                                      : extension.startsWith(".doc")
-                                      ? docIcon
-                                      : extension.startsWith(".jpg")
-                                      ? jpgIcon
-                                      : extension.startsWith(".ppt")
-                                      ? pptIcon
-                                      : extension.startsWith(".psd")
-                                      ? psdIcon
-                                      : extension.startsWith(".svg")
-                                      ? svgIcon
-                                      : extension.startsWith(".xls")
-                                      ? xlsIcon
-                                      : extension.startsWith(".css")
-                                      ? cssIcon
-                                      : extension.startsWith(".html")
-                                      ? htmlIcon
-                                      : extension.startsWith(".ts")
-                                      ? tsIcon
-                                      : extension.startsWith(".txt")
-                                      ? txtIcon
-                                      : extension.startsWith(".gif")
-                                      ? gifIcon
-                                      : extension.startsWith(".mp3")
-                                      ? mp3Icon
-                                      : extension.startsWith(".zip")
-                                      ? zipIcon
-                                      : extension.startsWith(".js")
-                                      ? jsIcon
-                                      : zipIcon
-                                  }
-                                  alt=""
-                                />
+                                <FileIcon extension={file.extension} />
 
                                 <Typography
                                   variant="small"
                                   color="blue-gray"
                                   className="font-normal flex items-center gap-2 "
                                 >
-                                  {fileName}
+                                  {file.fileName}
                                 </Typography>
                               </div>
                             </td>
@@ -287,7 +257,7 @@ export function Home() {
                                 color="blue-gray"
                                 className="font-normal"
                               >
-                                {path === "/Root" ? "/" : path}
+                                {file.path === "/Root" ? "/" : file.path}
                               </Typography>
                             </td>
                             <td className={classes}>
@@ -301,78 +271,25 @@ export function Home() {
                             </td>
                             <td className={classes}>
                               <div className="flex items-center gap-4">
-                                <Menu>
-                                  <MenuHandler>
-                                    <IconButton
-                                      variant="text"
-                                      className="rounded-full hover:bg-blue-100 h-8 w-8"
-                                    >
-                                      <EllipsisVerticalIcon className="h-5 w-5" />
-                                    </IconButton>
-                                  </MenuHandler>
-                                  <MenuList className="flex flex-col gap-1">
-                                    {!favorited && (
-                                      <MenuItem
-                                        className="flex items-center gap-2"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          mutationFavoriteFile.mutate({
-                                            folderId,
-                                            fileId,
-                                          });
-                                        }}
-                                      >
-                                        <StarIcon className="h-4 w-4" />
-                                        Favorite
-                                      </MenuItem>
-                                    )}
-
-                                    {favorited && (
-                                      <MenuItem
-                                        className="flex items-center gap-2"
-                                        onClick={(e) => {
-                                          mutationUnfavoriteFile.mutate({
-                                            folderId,
-                                            fileId,
-                                          });
-                                        }}
-                                      >
-                                        <StarIcon className="h-4 w-4" />
-                                        Unfavorite
-                                      </MenuItem>
-                                    )}
-                                    <hr className="mr-1" />
-                                    <MenuItem
-                                      className="flex items-center gap-2 !text-red-500"
-                                      onClick={() =>
-                                        handleDeleteFile(
-                                          {
-                                            extension,
-                                            favorited,
-                                            file,
-                                            fileId,
-                                            fileName,
-                                          },
-                                          folder
-                                        )
-                                      }
-                                    >
-                                      <TrashIcon className="h-4 w-4" />
-                                      Delete File
-                                    </MenuItem>
-                                  </MenuList>
-                                </Menu>
+                                <FileMenu file={file} folderId={file.folderId}>
+                                  <IconButton
+                                    variant="text"
+                                    className="rounded-full hover:bg-blue-100 h-8 w-8"
+                                  >
+                                    <EllipsisVerticalIcon className="h-5 w-5" />
+                                  </IconButton>
+                                </FileMenu>
                               </div>
                             </td>
                           </tr>
                         );
-                      }
-                    )}
-                  </tbody>
-                </table>
-              </Card>
-            </CardBody>
-          </Card>
+                      })}
+                    </tbody>
+                  </table>
+                </Card>
+              </CardBody>
+            </Card>
+          )}
         </section>
       </div>
     </>

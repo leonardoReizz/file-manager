@@ -22,6 +22,7 @@ function App() {
             apiAuth
               .refreshToken()
               .then((result) => {
+                console.log(result);
                 if (result?.status === 200) {
                   const expirationDateToken = new Date();
                   const expirationDateRefreshToken = new Date();
@@ -33,19 +34,17 @@ function App() {
                   ); // 50 minutes to milissegundos
                   Cookies.set(
                     "leviFileRefresh",
-                    `${result.data.token_type} ${result.data.refreshToken}`,
+                    `bearer ${result.data.message.refreshToken}`,
                     { expires: expirationDateRefreshToken }
                   );
                   Cookies.set(
                     "leviFileToken",
-                    `${result.data.token_type} ${result.data.accessToken}`,
+                    `bearer ${result.data.message.accessToken}`,
                     { expires: expirationDateToken }
                   );
-                } else {
-                  // window.location.href = "/";
-                  // setState("index");
+                  return result;
                 }
-                return result;
+                window.location.href = "/";
               })
               .catch((error) => {
                 Cookies.remove("leviFileRefresh");

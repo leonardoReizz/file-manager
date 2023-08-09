@@ -29,11 +29,7 @@ export function FileMenu({
     useFileMenu();
 
   return (
-    <Menu
-      open={open}
-      handler={handler}
-      placement={open !== undefined ? "right" : undefined}
-    >
+    <Menu open={open} handler={handler}>
       <MenuHandler>{children}</MenuHandler>
       <MenuList className="flex flex-col gap-1">
         {!file.favorited && (

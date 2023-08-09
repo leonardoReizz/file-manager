@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import { Home } from "../pages/Home";
 import { LayoutWithSidebar } from "./LayoutWithSidebar";
 import { SignIn } from "../pages/SignIn";
@@ -12,6 +12,7 @@ import { ProfileSettings } from "@pages/ProfileSettings";
 import { SecuritySettings } from "@pages/SecuritySettings";
 import { LayoutWithSettingsSidebar } from "./LayoutWithSettingsSidebar";
 import { Favorite } from "@pages/Favorite";
+import { ViewFileDialogContextProvider } from "../context/ViewFileDialogContext";
 
 export function AppRoutes() {
   return (
@@ -29,8 +30,16 @@ export function AppRoutes() {
               </UserContextProvider>
             }
           >
-            <Route path="/home" element={<Home />} />
-            <Route path="favorite" element={<Favorite />} />
+            <Route
+              element={
+                <ViewFileDialogContextProvider>
+                  <Outlet />
+                </ViewFileDialogContextProvider>
+              }
+            >
+              <Route path="/home" element={<Home />} />
+              <Route path="favorite" element={<Favorite />} />
+            </Route>
             <Route path="settings" element={<LayoutWithSettingsSidebar />}>
               <Route path="profile" element={<ProfileSettings />} />
               <Route path="security" element={<SecuritySettings />} />
